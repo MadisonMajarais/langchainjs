@@ -236,7 +236,7 @@ import {
         name = "slack-post-message";
      
         description = `A slack tool. useful for posting a message to a channel
-        Input is a json object as follows {channel id, text}`;
+        Input is a JSON object as follows {channel id, text}`;
      
         protected token: string;
      
@@ -265,20 +265,12 @@ import {
         }
      
         /** @ignore */
-        async _call(input: SlackPostMessageToolParams): Promise<string> {    
-            const input2: SlackPostMessageToolParams = {
-                channel: "all-fireflies",
-                text: "heyy",
-              };  
-          console.log("input", input)
-          console.log("type", typeof input)
-          console.log("channel: ", input.channel)
-          console.log("message ", input.text)
-          console.log(JSON.stringify(input, null, 2));
+        async _call(input: string): Promise<string> {    
+          const obj = JSON.parse(input)
           try {
             const results = await this.client.chat.postMessage({
-                text: input.text,
-                channel: input.channel
+                text: obj.text,
+                channel: obj.channel
             })
      
             return JSON.stringify(results);
