@@ -167,7 +167,11 @@ import {
         name = "slack-schedule-message";
      
         description = `A slack tool. useful for scheduling messages to send on a specific date and time.
-        Input should be the three following parameters: a string message to send, the slack channel id, and the datetime as a unix timestamp`;
+         Input is a JSON object as follows {text: [text here], channel_id: [channel id here], post_at: [post at here]} where post_at is the datetime for when the message should be sent in the following format: YYYY-MM-DDTHH:MM:SS±hh:mm, where "T" separates the date
+         and time components, and the time zone offset is specified as ±hh:mm.
+         For example: "2023-06-09T10:30:00+03:00" represents June 9th
+         2023, at 10:30 AM in a time zone with a positive offset of +03:00
+         hours from Coordinated Universal Time (UTC).`;
      
         protected token: string;
      
@@ -196,25 +200,25 @@ import {
         }
      
         /** @ignore */
-        async _call(message: string, channel: string, post_at: string): Promise<string> {      
+        async _call(input: string): Promise<string> {      
           try {
-
-            const date = new Date(post_at);
-            const utcTimestamp = date.getTime();
-            console.log(channel);
-            console.log(post_at);
-            console.log(message);
-            channel = "C07UV3JV5NW"
+            const obj = JSON.parse(input);
+            const date = new Date(obj.post_at);
+            const utcTimestamp = date.getTime() / 1000;
+            console.log(obj)
+            console.log(utcTimestamp)
 
     
             const results = await this.client.chat.scheduleMessage({
-                channel: channel,
+                channel: obj.channel_id,
                 post_at: utcTimestamp,
-                text: message
+                text: obj.text
             })
      
+            //check for time in future
             return JSON.stringify(results);
           } catch (err) {
+            console.log(err)
             return "Error getting messages.";
           }
         }
@@ -266,15 +270,16 @@ import {
      
         /** @ignore */
         async _call(input: string): Promise<string> {    
-          const obj = JSON.parse(input)
           try {
+            const obj = JSON.parse(input)
             const results = await this.client.chat.postMessage({
                 text: obj.text,
-                channel: obj.channel
+                channel: obj.channel_id
             })
      
             return JSON.stringify(results);
           } catch (err) {
+            console.log(err)
             return "Error getting messages.";
           }
         }
