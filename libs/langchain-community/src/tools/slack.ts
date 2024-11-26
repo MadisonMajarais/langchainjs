@@ -16,27 +16,27 @@ import {
   }
 
    /**
-   * Tool parameters for the Slack tools
-   */
+    * Tool parameters for the SlackScheduleMessageToolParams
+    */
    interface SlackScheduleMessageToolParams extends SlackToolParams{
     channel?: string;
     post_at?: Number;
     text?: string;
   }
 
-     /**
-   * Tool parameters for the Slack Post message tools
-   */
-     interface SlackPostMessageToolParams extends SlackToolParams{
-        channel?: string;
-        text?: string;
-      }
+    /**
+     * Tool parameters for the SlackPostMessageToolParams
+     */
+    interface SlackPostMessageToolParams extends SlackToolParams{
+      channel?: string;
+      text?: string;
+    }
  
  
   /**
    * A tool for retrieving messages from a slack channel using a bot.
    * It extends the base Tool class and implements the _call method to
-   * perform the retrieve operation. Requires a slack token which can be set
+   * perform the retrieval operation. Requires a slack token which can be set
    * in the environment variables.
    * The _call method takes the search query as the input argument.
    * It returns the messages including the channel and text.
@@ -48,8 +48,8 @@ import {
  
     name = "slack-get-messages";
  
-    description = `A slack tool. useful for reading messages from slack channels.
-    Input should be the search query.`;
+    description = `A slack tool. useful for reading messages from a slack channel.
+    Input should be a search query.`;
  
     protected token: string;
  
@@ -97,10 +97,9 @@ import {
   /**
    * A tool for retrieving channels from a slack team.
    * It extends the base Tool class and implements the _call method to
-   * perform the retrieve operation. Requires a slack token which can be set
+   * perform the retrieval operation. Requires a slack token which can be set
    * in the environment variables.
-   * The _call method takes the search query as the input argument.
-   * It returns the messages including the channel and text.
+   * It returns channel information including the channel name and id.
    */
   export class SlackGetChannelsTool extends Tool {
     static lc_name() {
@@ -109,8 +108,8 @@ import {
  
     name = "slack-get-channels";
  
-    description = `A slack tool. useful for getting a list of details about channels in a slack team. This includes channel names and channel ids.
-    There is no input to this tool.`;
+    description = `A slack tool. useful for retrieving a list of details about channels in a slack team.
+    This includes channel names and channel ids. There is no input to this tool.`;
  
     protected token: string;
  
@@ -126,7 +125,7 @@ import {
  
       if (!token) {
         throw new Error(
-          "Environment variable SLACK_TOKEN missing, but is required for SlackGetMessagesTool."
+          "Environment variable SLACK_TOKEN missing, but is required for SlackGetChannelsTool."
         );
       }
      
@@ -146,18 +145,19 @@ import {
  
         return JSON.stringify(results);
       } catch (err) {
-        return "Error getting messages.";
+        return "Error getting channel information.";
       }
     }
   }
 
-    /**
-   * A tool for retrieving messages from a slack channel using a bot.
+
+  /**
+   * A tool for scheduling messages to be posted on slack channels using a bot.
    * It extends the base Tool class and implements the _call method to
-   * perform the retrieve operation. Requires a slack token which can be set
+   * perform the schedule operation. Requires a slack token which can be set
    * in the environment variables.
-   * The _call method takes the search query as the input argument.
-   * It returns the messages including the channel and text.
+   * The _call method takes the a JSON object in the format 
+   * {text: [text here], channel_id: [channel id here], post_at: [post at here]} as its input.
    */
     export class SlackScheduleMessageTool extends Tool {
         static lc_name() {
@@ -219,18 +219,19 @@ import {
             return JSON.stringify(results);
           } catch (err) {
             console.log(err)
-            return "Error getting messages.";
+            return "Error getting time.";
           }
         }
       }
 
-          /**
-   * A tool for retrieving messages from a slack channel using a bot.
+
+  /**
+   * A tool for posting messages to a slack channel using a bot.
    * It extends the base Tool class and implements the _call method to
-   * perform the retrieve operation. Requires a slack token which can be set
+   * perform the post operation. Requires a slack token which can be set
    * in the environment variables.
-   * The _call method takes the search query as the input argument.
-   * It returns the messages including the channel and text.
+   * The _call method takes a JSON object in the format {chanel id, text} as its input.
+   * It returns the message information including the timestamp ID.
    */
     export class SlackPostMessageTool extends Tool {
         static lc_name() {
@@ -240,7 +241,7 @@ import {
         name = "slack-post-message";
      
         description = `A slack tool. useful for posting a message to a channel
-        Input is a JSON object as follows {channel id, text}`;
+        Input is a JSON object as follows {channel id, text}. Output is the timestamp ID.`;
      
         protected token: string;
      
@@ -256,7 +257,7 @@ import {
      
           if (!token) {
             throw new Error(
-              "Environment variable SLACK_TOKEN missing, but is required for SlackScheduleMessageTool."
+              "Environment variable SLACK_TOKEN missing, but is required for SlackPostMessageTool."
             );
           }
          
