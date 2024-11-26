@@ -18,7 +18,7 @@ test.skip("SlackGetMessagesTool", async () => {
 
 test.skip("SlackGetChannelsTool", async () => {
     const tool = new SlackGetChannelsTool();
-    const result = await tool.invoke();
+    const result = await tool.invoke("");
     // console.log(result);
     expect(result).toBeTruthy();
     expect(result).not.toEqual("Error getting channel information.");

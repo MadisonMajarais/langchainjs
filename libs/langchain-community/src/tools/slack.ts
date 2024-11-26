@@ -115,7 +115,7 @@ import {
     }
  
     /** @ignore */
-    async _call(): Promise<string> {
+    async _call(_input: string): Promise<string> {
       try {
 
         const results = await this.client.conversations.list();
