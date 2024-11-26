@@ -1,8 +1,5 @@
 import {
-    WebClient,
-    conversations,
-    search,
-    chat,
+    WebClient
   } from "@slack/web-api";
   import { getEnvironmentVariable } from "@langchain/core/utils/env";
   import { Tool } from "@langchain/core/tools";
@@ -13,25 +10,7 @@ import {
   interface SlackToolParams {
     token?: string;
     client?: WebClient;
-  }
-
-   /**
-    * Tool parameters for the SlackScheduleMessageToolParams
-    */
-   interface SlackScheduleMessageToolParams extends SlackToolParams{
-    channel?: string;
-    post_at?: Number;
-    text?: string;
-  }
-
-    /**
-     * Tool parameters for the SlackPostMessageToolParams
-     */
-    interface SlackPostMessageToolParams extends SlackToolParams{
-      channel?: string;
-      text?: string;
-    }
- 
+  } 
  
   /**
    * A tool for retrieving messages from a slack channel using a bot.
@@ -72,7 +51,6 @@ import {
       this.client =
         client ??
         new WebClient(token);
-
 
       this.token = token;
     }
@@ -133,7 +111,6 @@ import {
         client ??
         new WebClient(token);
 
-
       this.token = token;
     }
  
@@ -177,7 +154,7 @@ import {
      
         protected client: WebClient;
      
-        constructor(fields?: SlackScheduleMessageToolParams) {
+        constructor(fields?: SlackToolParams) {
           super();
      
           const {
@@ -205,9 +182,6 @@ import {
             const obj = JSON.parse(input);
             const date = new Date(obj.post_at);
             const utcTimestamp = date.getTime() / 1000;
-            console.log(obj)
-            console.log(utcTimestamp)
-
     
             const results = await this.client.chat.scheduleMessage({
                 channel: obj.channel_id,
@@ -215,11 +189,9 @@ import {
                 text: obj.text
             })
      
-            //check for time in future
             return JSON.stringify(results);
           } catch (err) {
-            console.log(err)
-            return "Error getting time.";
+            return "Error scheduling message.";
           }
         }
       }
@@ -241,13 +213,13 @@ import {
         name = "slack-post-message";
      
         description = `A slack tool. useful for posting a message to a channel
-        Input is a JSON object as follows {channel id, text}. Output is the timestamp ID.`;
+        Input is a JSON object as follows '{channel_id, text}'`;
      
         protected token: string;
      
         protected client: WebClient;
      
-        constructor(fields?: SlackPostMessageToolParams) {
+        constructor(fields?: SlackToolParams) {
           super();
      
           const {
@@ -280,8 +252,7 @@ import {
      
             return JSON.stringify(results);
           } catch (err) {
-            console.log(err)
-            return "Error getting messages.";
+            return "Error posting message.";
           }
         }
       }

@@ -1,38 +1,47 @@
 import { test } from "@jest/globals";
 import {
+ SlackGetChannelsTool,
  SlackGetMessagesTool,
+ SlackScheduleMessageTool,
+ SlackPostMessageTool,
+
 } from "../slack.js";
-// import { AgentExecutor, createOpenAIToolsAgent } from "@langchain/agents";
 
-// const chat = new ChatOpenAI({
-//     model: "gpt-3.5-turbo-1106",
-//     temperature: 0,
-//   });
-
-//   const prompt = ChatPromptTemplate.fromMessages([
-//     [
-//       "system",
-//       "You are a helpful assistant. You may not need to use tools for every query - the user may just want to chat!",
-//     ],
-//     new MessagesPlaceholder("messages"),
-//     new MessagesPlaceholder("agent_scratchpad"),
-//   ]);
-
-// const tools = [
-//     new SlackGetMessagesTool()
-// ]
-//   const agent = await createOpenAIToolsAgent({
-//     llm: chat,
-//     tools,
-//     prompt,
-//   });
+test.skip("SlackGetMessagesTool", async () => {
+    const tool = new SlackGetMessagesTool();
   
-//   const agentExecutor = new AgentExecutor({ agent, tools });
+    const result = await tool.invoke("Hi");
+    // console.log(result);
+    expect(result).toBeTruthy();
+    expect(result).not.toEqual("Error getting messages.");
+  });
 
-test("SlackGetMessagesTool", async () => {
-    // Search and get message
-const getMessageTool = new SlackGetMessagesTool();
-const messageResults = await getMessageTool.invoke("test");
-console.log("inside here");
-console.log(messageResults);
-})
+test.skip("SlackGetChannelsTool", async () => {
+    const tool = new SlackGetChannelsTool();
+    const result = await tool.invoke();
+    // console.log(result);
+    expect(result).toBeTruthy();
+    expect(result).not.toEqual("Error getting channel information.");
+});
+
+test.skip("SlackScheduleMessageTool", async () => {
+    const tool = new SlackScheduleMessageTool();
+    const result = await tool.invoke(JSON.stringify({
+        text: "Test", 
+        channel_id: "C1234567890",
+        post_at: "2024-12-09T10:30:00+03:00"
+    }));
+    // console.log(result);
+    expect(result).toBeTruthy();
+    expect(result).not.toEqual("Error scheduling message.");
+});
+
+test.skip("SlackPostMessageTool", async () => {
+    const tool = new SlackPostMessageTool();
+    const result = await tool.invoke(JSON.stringify({
+        text: "Test", 
+        channel_id: "C1234567890"
+    }));
+    // console.log(result);
+    expect(result).not.toEqual("Error posting message.");
+});
