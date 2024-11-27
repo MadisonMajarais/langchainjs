@@ -1,9 +1,8 @@
 import {
- SlackGetChannelsTool,
- SlackGetMessagesTool,
- SlackScheduleMessageTool,
- SlackPostMessageTool,
-
+  SlackGetChannelsTool,
+  SlackGetMessagesTool,
+  SlackScheduleMessageTool,
+  SlackPostMessageTool,
 } from "@langchain/community/tools/slack";
 
 // Get messages given a query
@@ -18,17 +17,21 @@ console.log(channelResults);
 
 // Schedule a slack message given a message, channel and time
 const scheduleMessageTool = new SlackScheduleMessageTool();
-const schduleResults = await scheduleMessageTool.invoke(JSON.stringify({
-    text: "Test", 
+const schduleResults = await scheduleMessageTool.invoke(
+  JSON.stringify({
+    text: "Test",
     channel_id: "C1234567890",
-    post_at: "2024-12-09T10:30:00+03:00"
-}));
+    post_at: "2024-12-09T10:30:00+03:00",
+  })
+);
 console.log(schduleResults);
 
 // Post a message to a given channel
 const postMessageTool = new SlackPostMessageTool();
-const postResult = await postMessageTool.invoke(JSON.stringify({
-    text: "Test", 
-    channel_id: "C1234567890"
-}));
+const postResult = await postMessageTool.invoke(
+  JSON.stringify({
+    text: "Test",
+    channel_id: "C1234567890",
+  })
+);
 console.log(postResult);
