@@ -39,12 +39,30 @@ const agent = await createOpenAIToolsAgent({
   prompt,
 });
 
-const agentExecutor = new AgentExecutor({ agent, tools });
+const agentExecutor = new AgentExecutor({ agent, tools, maxIterations: 20, });
 
-const res = await agentExecutor.invoke({
+let res = await agentExecutor.invoke({
   messages: [
     new HumanMessage("send a greeting message to the general channel"),
   ],
 });
 
 console.log(res.output);
+
+res = await agentExecutor.invoke({
+  messages: [
+    new HumanMessage("Schedule a greeting message to the general channel at 11:15 am on December 12, 2024 in New York time."),
+  ],
+});
+
+console.log(res.output);
+
+res = await agentExecutor.invoke({
+  messages: [
+    new HumanMessage("When did I say 'hi' in the slack channels?"),
+  ],
+});
+
+console.log(res.output);
+
+

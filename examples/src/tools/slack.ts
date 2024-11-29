@@ -17,14 +17,14 @@ console.log(channelResults);
 
 // Schedule a slack message given a message, channel and time
 const scheduleMessageTool = new SlackScheduleMessageTool();
-const schduleResults = await scheduleMessageTool.invoke(
+const scheduleResults = await scheduleMessageTool.invoke(
   JSON.stringify({
     text: "Test",
     channel_id: "C1234567890",
     post_at: "2024-12-09T10:30:00+03:00",
   })
 );
-console.log(schduleResults);
+console.log(scheduleResults);
 
 // Post a message to a given channel
 const postMessageTool = new SlackPostMessageTool();

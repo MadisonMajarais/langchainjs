@@ -13,10 +13,11 @@ interface SlackToolParams {
 /**
  * A tool for retrieving messages from a slack channel using a bot.
  * It extends the base Tool class and implements the _call method to
- * perform the retrieval operation. Requires a slack token which can be set
+ * perform the retrieval operation. Requires a slack user token which can be set
  * in the environment variables.
  * The _call method takes the search query as the input argument.
- * It returns the messages including the channel and text.
+ * It returns the messages including the channel id and name, the text,
+ * the timestamp, team, user id and username.
  */
 export class SlackGetMessagesTool extends Tool {
   static lc_name() {
@@ -56,7 +57,18 @@ export class SlackGetMessagesTool extends Tool {
         query: searchTerm,
       });
 
-      return JSON.stringify(results);
+      const filtered =
+        results.messages?.matches?.map((match: any) => ({
+          channel_id: match.channel.id,
+          channel_name: match.channel.name,
+          team: match.team,
+          text: match.text,
+          ts: match.ts,
+          user: match.user,
+          username: match.username,
+        })) ?? [];
+
+      return JSON.stringify(filtered);
     } catch (err) {
       return "Error getting messages.";
     }
@@ -66,9 +78,10 @@ export class SlackGetMessagesTool extends Tool {
 /**
  * A tool for retrieving channels from a slack team.
  * It extends the base Tool class and implements the _call method to
- * perform the retrieval operation. Requires a slack token which can be set
+ * perform the retrieval operation. Requires a slack user token which can be set
  * in the environment variables.
- * It returns channel information including the channel name and id.
+ * It returns channel information including the channel name, id, created time,
+ * topic, user membership, purpose and number of members.
  */
 export class SlackGetChannelsTool extends Tool {
   static lc_name() {
@@ -106,7 +119,18 @@ export class SlackGetChannelsTool extends Tool {
     try {
       const results = await this.client.conversations.list();
 
-      return JSON.stringify(results);
+      const filtered =
+        results.channels?.map((result: any) => ({
+          channel_id: result.id,
+          channel_name: result.name,
+          created: result.created,
+          topic: result.topic.value,
+          is_member: result.is_member,
+          purpose: result.purpose.value,
+          num_members: result.num_members,
+        })) ?? [];
+
+      return JSON.stringify(filtered);
     } catch (err) {
       return "Error getting channel information.";
     }
@@ -116,10 +140,11 @@ export class SlackGetChannelsTool extends Tool {
 /**
  * A tool for scheduling messages to be posted on slack channels using a bot.
  * It extends the base Tool class and implements the _call method to
- * perform the schedule operation. Requires a slack token which can be set
+ * perform the schedule operation. Requires a slack user token which can be set
  * in the environment variables.
  * The _call method takes the a JSON object in the format
  * {text: [text here], channel_id: [channel id here], post_at: [post at here]} as its input.
+ * It returns the message text, the time to post the message and the channel id.
  */
 export class SlackScheduleMessageTool extends Tool {
   static lc_name() {
@@ -129,7 +154,7 @@ export class SlackScheduleMessageTool extends Tool {
   name = "slack-schedule-message";
 
   description = `A slack tool. useful for scheduling messages to send on a specific date and time.
-         Input is a JSON object as follows {text: [text here], channel_id: [channel id here], post_at: [post at here]} where post_at is the datetime for when the message should be sent in the following format: YYYY-MM-DDTHH:MM:SS±hh:mm, where "T" separates the date
+         Input is a JSON object as follows '{text: [text here], channel_id: [channel id here], post_at: [post at here]}' where post_at is the datetime for when the message should be sent in the following format: YYYY-MM-DDTHH:MM:SS±hh:mm, where "T" separates the date
          and time components, and the time zone offset is specified as ±hh:mm.
          For example: "2023-06-09T10:30:00+03:00" represents June 9th
          2023, at 10:30 AM in a time zone with a positive offset of +03:00
@@ -169,7 +194,13 @@ export class SlackScheduleMessageTool extends Tool {
         text: obj.text,
       });
 
-      return JSON.stringify(results);
+      const filtered = {
+        channel_id: results.channel,
+        post_at: results.post_at,
+        text: results.message?.text,
+      };
+
+      return JSON.stringify(filtered);
     } catch (err) {
       return "Error scheduling message.";
     }
@@ -179,10 +210,10 @@ export class SlackScheduleMessageTool extends Tool {
 /**
  * A tool for posting messages to a slack channel using a bot.
  * It extends the base Tool class and implements the _call method to
- * perform the post operation. Requires a slack token which can be set
+ * perform the post operation. Requires a slack user token which can be set
  * in the environment variables.
  * The _call method takes a JSON object in the format {chanel id, text} as its input.
- * It returns the message information including the timestamp ID.
+ * It returns the message information including the text, timestamp ID and channel id.
  */
 export class SlackPostMessageTool extends Tool {
   static lc_name() {
@@ -224,7 +255,13 @@ export class SlackPostMessageTool extends Tool {
         channel: obj.channel_id,
       });
 
-      return JSON.stringify(results);
+      const filtered = {
+        channel_id: results.channel,
+        ts: results.ts,
+        text: results.message?.text,
+      };
+
+      return JSON.stringify(filtered);
     } catch (err) {
       return "Error posting message.";
     }
