@@ -28,7 +28,7 @@ test.skip("SlackScheduleMessageTool", async () => {
   const result = await tool.invoke(
     JSON.stringify({
       text: "Test",
-      channel_id: "C07UV3JV5NW",
+      channel_id: "C1234567890",
       post_at: "2024-12-09T10:30:00+03:00",
     })
   );
